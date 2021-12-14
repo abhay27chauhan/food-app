@@ -1,11 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from "react-router-dom";
-import AuthProvider, { useAuth } from '../../context/AuthProvider';
+import { useAuth } from '../../context/AuthProvider';
 
 import './Navbar.css'
 
 function Navbar() {
-    // console.log(localStorage.getItem("user"));
     const { user, logout } = useAuth()
  
     useEffect(() => {

@@ -1,26 +1,39 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import axios from "axios";
+import toast from "react-hot-toast";
+
+import { submitUserRegisterDetails } from "api/register";
 
 import "./Login.css";
+import { useAuth } from "context/AuthProvider";
 
 function Signup() {
   const history = useHistory();
-  const [name, nameSet] = useState("");
-  const [password, passwordSet] = useState("");
-  const [email, emailSet] = useState("");
+  const { signUp } = useAuth();
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [siginButtonDisabled, setSiginButtonDisabled] = useState(false);
 
   const handleSignup = async () => {
+    setSiginButtonDisabled(true);
     try {
-      await axios.post("/api/users/signup", {
+      let res = await submitUserRegisterDetails({
         name: name,
         email: email,
         password: password,
         confirmPassword: confirm,
       });
-      history.push("/login");
+      if (res) {
+        signUp(res);
+        toast.success("user registered!!")
+        history.push("/");
+      } else {
+        setSiginButtonDisabled(false);
+      }
     } catch (err) {
+      setSiginButtonDisabled(false);
       console.log(err);
     }
   };
@@ -41,7 +54,7 @@ function Signup() {
               name="Name"
               placeholder="Your Name"
               required=""
-              onChange={(e) => nameSet(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="entryBox">
@@ -52,7 +65,7 @@ function Signup() {
               name="Email"
               placeholder="Your Email"
               required=""
-              onChange={(e) => emailSet(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="entryBox">
@@ -62,7 +75,7 @@ function Signup() {
               type="password"
               name="Password"
               placeholder="**********"
-              onChange={(e) => passwordSet(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="entryBox">
@@ -76,7 +89,8 @@ function Signup() {
             />
           </div>
           <button
-            className="loginBtn  form-button"
+            disabled={siginButtonDisabled}
+            className="loginBtn form-button"
             type="submit"
             onClick={handleSignup}
           >
